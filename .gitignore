@@ -30,3 +30,6 @@ ENV/
 
 # App-specific stuff
 data/
+
+# Gedit backup files
+*~

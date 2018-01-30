@@ -36,3 +36,21 @@ Python 3.6, MongoDB, Docker, Celery+Redis as a broker
 - config.py - configuration settings <br>
 - run.py - launcher
 
+## Dockerized version
+
+Configure the Docker daemon so that it exposes the API on localhost as described here: [Docker Daemon Configuration](https://docs.docker.com/engine/admin/#configure-the-docker-daemon)
+
+For example, set/extend `/etc/docker/daemon.json` on Linux as follows:
+```
+{
+  "hosts": ["tcp://localhost:2376", "unix:///var/run/docker.sock", ...]
+}
+```
+
+Use `docker-compose build` within the root folder of the project to pull or build all required images.
+
+With `docker-compose up -d` the required framework containers can be created and started (four containers: hdtapps-framework, mongodb, celery-worker, redis) in the background.
+Without setting `-d`the log outputs of all containers are forwarded to the current terminal which can be helpful for debugging.
+To stop and destroy all running containers execute `docker-compose down` which removes also all related resources such as volumes, networks, etc.
+
+A complete list of docker-compose commands and their parameters can be found here: [Docker Docs](https://docs.docker.com/compose/reference/overview/)

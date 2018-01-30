@@ -1,0 +1,11 @@
+# Ignore git related files
+.git
+
+# Ignore Docker related files
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Ignore gedit backup files
+*~
+
