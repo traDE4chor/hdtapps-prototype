@@ -104,7 +104,8 @@ def find_transformations():
     if qname:
         t = db_handler.find_transformation_by_qname(qname)
 
-        return jsonify(t)
+        # hahnml: Put the single result object in a list since the API specifies that always an array of elements is returned
+        return jsonify([t])
 
     else:
         pnum = int(request.args.get('pnum'))

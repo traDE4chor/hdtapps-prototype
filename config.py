@@ -4,7 +4,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     DB_HOST = os.getenv('MONGO_HOST', 'localhost')
-    DB_PORT = os.getenv('MONGO_PORT', '27017')
+    DB_PORT = int(os.getenv('MONGO_PORT', '27017'))
     DB_NAME = 'hdtapps'
     APP_COLL_NAME = 'applications'
     TRANSF_COLL_NAME = 'transformations'
