@@ -1,0 +1,98 @@
+{
+  "appInfo": {
+    "appName": "opal3dAnimatedLoopFile",
+    "appVersion": "1.0.0",
+    "appPublisher": "Michael Hahn",
+    "appDesc": "Transformation of the snapshots into video",
+    "appDevelopers": ["Michael Hahn"],
+    "appLicense": "Apache License 2.0",
+    "tags": [ "opal", "simulation", "video"]
+  },
+  "transformations": [
+    {
+      "name": "snapshots-to-video",
+      "qname": "simtech.opal.snapshots2video",
+      "inputParams": [
+        {
+          "inputName": "numberOfFilesToAnimate",
+          "alias": "$numberOfFilesToAnimate",
+          "isOptional": false,
+          "type": "integer"
+        }
+      ],
+      "inputFileSets": [
+        {
+          "inputName": "snapshots",
+          "alias": "$inputsShapshots",
+          "isOptional": false,
+          "format": "dat",
+          "requiredPath": "{r}/",
+          "fileSetSize": "$numberOfFilesToAnimate",
+          "fileName": "abcd"
+        }
+      ],
+      "outputFiles": [
+        {
+          "outputName": "opalClusterSnapshots",
+          "alias": "$outputVideo",
+          "format": "mp4",
+          "accessPath": "{r}/"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "softDeps": [
+      {
+        "depName": "Python3",
+        "alias": "$python3",
+        "depDesc": "Python 3",
+        "depVersion": "3",
+        "commands": ["sudo apt-get update", "sudo apt-get -y install python3"]
+      },
+      {
+        "depName": "pip3",
+        "alias": "$pip3",
+        "depDesc": "Python package management tool",
+        "depVersion": "3",
+        "commands": ["sudo apt-get -y install python3-pip"]
+      },
+      {
+        "depName": "numpy",
+        "alias": "$numpy",
+        "depDesc": "fundamental package for scientific computing with Python",
+        "depVersion": ">1.13.0",
+        "commands": ["sudo apt-get -y install python-numpy"]
+      },
+      {
+        "depName": "matplotlib",
+        "alias": "$matplotlib",
+        "depDesc": "plotting library for the Python programming language",
+        "depVersion": ">2.0.0",
+        "commands": ["sudo apt-get -y install python-matplotlib"]
+      },
+      {
+        "depName": "ffmpeg",
+        "alias": "$ffmpeg",
+        "depDesc": "Install FFmpeg storing animated plots as videos",
+        "depVersion": ">3.0",
+        "commands": [
+          "sudo apt-get -y install ppa-purge software-properties-common",
+          "sudo ppa-purge -y ppa:mc3man/trusty-media",
+          "sudo add-apt-repository -y ppa:mc3man/trusty-media",
+          "sudo apt-get update",
+          "sudo apt-get -y install ffmpeg"
+        ]
+      }
+    ]
+  },
+  "invocations": {
+    "invocationsCLI": [
+      {
+        "invName": "opal3dAnimatedLoopFile CLI invocation",
+        "invDesc": "Specify the prefix of the snapshots and the number of snapshots to use",
+        "command": "python opal3dAnimatedLoopFile.py $numberOfFilesToAnimate"
+      }
+    ]
+  }
+}
