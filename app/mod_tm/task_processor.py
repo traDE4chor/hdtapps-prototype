@@ -129,7 +129,7 @@ def run_transformation_task(self, request_body):
         for a in task_obj.input_filesets_map:
             fs = task_obj.input_filesets_map[a]
             req_input_path = get_required_path(fs["requiredPath"])
-            copy_dir_to_container(app_container, fs["linkToArchive"], req_input_path)
+            copy_dir_to_container(app_container, fs["links"], req_input_path)
 
     start_container(app_container)
 

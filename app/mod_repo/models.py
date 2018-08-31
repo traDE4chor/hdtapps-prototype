@@ -403,6 +403,11 @@ class InputFileSet:
         else:
             self.size = -1
 
+        if "fileName" in fileset:
+            self.file_name = fileset["fileName"]
+        else:
+            self.file_name = self.name
+
 
 class OutputFile:
     def __init__(self, file):
@@ -913,7 +918,8 @@ class ApplicationSpecJsonEncoder(json.JSONEncoder):
                 "format": o.format,
                 "schema": o.schema,
                 "requiredPath": o.req_path,
-                "fileSetSize": o.size
+                "fileSetSize": o.size,
+                "fileName": o.file_name
             }
 
         if isinstance(o, OutputFile):

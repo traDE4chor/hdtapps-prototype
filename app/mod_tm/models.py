@@ -90,12 +90,16 @@ class TransformationTask:
             for fs in request_body["inputFileSets"]:
                 if fs["format"] not in req_file_sets_dict:
                     req_file_sets_dict[fs["format"]] = []
-                req_file_sets_dict[fs["format"]].append(fs["linkToArchive"])
+                # @hahnml: We need to distinguish between archives and list of files
+                if "linksToFiles" in fs:
+                    req_file_sets_dict[fs["format"]].append(fs["linksToFiles"])
+                else:
+                    req_file_sets_dict[fs["format"]].append([ fs["linkToArchive"] ])
             filesets_map = {}
             for fileset in self.transform["inputFileSets"]:
                 link = req_file_sets_dict[fileset["format"]].pop()
                 filesets_map[fileset["alias"]] = fileset
-                filesets_map[fileset["alias"]]["linkToArchive"] = link
+                filesets_map[fileset["alias"]]["links"] = link
 
             return filesets_map
 
@@ -107,22 +111,34 @@ class TransformationTask:
 
     def __materialize_input_filesets(self):
         for a in self.input_filesets_map:
-            response = requests.get(self.input_filesets_map[a]["linkToArchive"], stream=True)
-            content_type = response.headers['content-type']
-            extension = mimetypes.guess_extension(content_type)
-            temp_file = "archive" + extension
             temp_dir = os.path.join(self.task_folder_path, a.replace("$", ""))
             if not os.path.exists(temp_dir):
                 os.makedirs(temp_dir)
-            temp_path = os.path.join(temp_dir, temp_file)
 
-            with open(temp_path, 'wb') as f:
-                for chunk in response:
-                    f.write(chunk)
+            # @hahnml: We need to loop over the potential list of links ("linksToFiles")
+            for idx, file in enumerate(self.input_filesets_map[a]["links"]):
+                response = requests.get(file, stream=True)
+                content_type = response.headers['content-type']
+                extension = mimetypes.guess_extension(content_type)
 
-            Archive(temp_path).extractall(temp_dir)
-            os.remove(temp_path)
-            self.input_filesets_map[a]["linkToArchive"] = temp_dir
+                # @hahnml: In case of an archive, create a temporary file name, else generate a file name for the
+                # current file with an increasing integer counter based on the app-spec.json
+                if extension == ".zip":
+                    temp_file = "archive" + extension
+                else:
+                    temp_file = self.input_filesets_map[a]["fileName"] + str(idx+1) + "." + self.input_filesets_map[a]["format"]
+
+                temp_path = os.path.join(temp_dir, temp_file)
+
+                with open(temp_path, 'wb') as f:
+                    for chunk in response:
+                        f.write(chunk)
+
+                if extension == ".zip":
+                    Archive(temp_path).extractall(temp_dir)
+                    os.remove(temp_path)
+
+            self.input_filesets_map[a]["links"] = temp_dir
 
     def __choose_invocation(self):
         return self.app["invocations"][0]

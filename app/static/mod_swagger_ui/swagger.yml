@@ -223,7 +223,9 @@ paths:
       tags:
       - "Tasks"
       summary: "Request new data transformation"
-      description: "Request transformation from the Task Manager"
+      description:  >-
+        Request transformation from the Task Manager. Note if specifying an input file set you can
+        either point to an archive ('linkToArchive') or list links to all related files individually in an array ('linksToFiles')
       operationId: "hdtapps.api.create_task"
       consumes:
       - "application/json"
@@ -541,8 +543,9 @@ definitions:
       requiredPath:
         type: "string"
       fileSetSize:
-        type: "integer"
-        format: "int32"
+        type: "string"
+      fileName:
+        type: "string"
   
   OutputFile:
     type: "object"
@@ -735,6 +738,10 @@ definitions:
         format: "int32"
       linkToArchive:
         type: "string"
+      linksToFiles:
+        type: "array"
+        items:
+          type: "string"
 
   Task:
     type: "object"
