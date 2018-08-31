@@ -58,11 +58,12 @@ def create_file_tarball(artifact_file):
     pw_tarstream = BytesIO()
     pw_tar = tarfile.TarFile(fileobj=pw_tarstream, mode='w')
     file_data = open(artifact_file, 'r').read()
-    tarinfo = tarfile.TarInfo(name=artifact_file)
+    file_name = os.path.basename(artifact_file)
+    tarinfo = tarfile.TarInfo(name=file_name)
     tarinfo.size = len(file_data)
     tarinfo.mtime = time.time()
     # tarinfo.mode = 0600
-    pw_tar.addfile(tarinfo, BytesIO(file_data))
+    pw_tar.addfile(tarinfo, BytesIO(file_data.encode()))
     pw_tar.close()
     pw_tarstream.seek(0)
     return pw_tarstream
@@ -122,7 +123,10 @@ def run_transformation_task(self, request_body):
 
     if task_obj.input_files_map is not None:
         # copy input files to container
-        pass
+        for a in task_obj.input_files_map:
+            fs = task_obj.input_files_map[a]
+            req_input_path = get_required_path(fs["requiredPath"])
+            copy_file_to_container(app_container, fs["link"], req_input_path)
 
     if task_obj.input_filesets_map is not None:
         # copy input filesets to container

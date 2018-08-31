@@ -107,7 +107,20 @@ class TransformationTask:
             return {}
 
     def __materialize_input_files(self):
-        pass
+        for a in self.input_files_map:
+            file = self.input_files_map[a]["link"]
+            response = requests.get(file, stream=True)
+            content_type = response.headers['content-type']
+            extension = mimetypes.guess_extension(content_type)
+
+            temp_file = a.replace("$", "") + "." + self.input_files_map[a]["format"]
+            temp_path = os.path.join(self.task_folder_path, temp_file)
+
+            with open(temp_path, 'wb') as f:
+                for chunk in response:
+                    f.write(chunk)
+
+            self.input_files_map[a]["link"] = temp_path
 
     def __materialize_input_filesets(self):
         for a in self.input_filesets_map:
@@ -159,9 +172,9 @@ class TransformationTask:
         if "inputFiles" in self.transform:
             for f in self.transform["inputFiles"]:
                 if f["alias"] in aliases:
+                    # @hahnml: Find matching input file for alias
+                    invocation["command"] = invocation["command"].replace(f["alias"], os.path.basename(self.input_files_map[f["alias"]]["link"]))
                     aliases.pop(f["alias"], None)
-                    # TODO: process input files
-                    pass
 
         if "inputFileSets" in self.transform:
             for f in self.transform["inputFileSets"]:
