@@ -12,8 +12,6 @@ services:
       - MONGO_PORT=27017
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    volumes:
-      - '.:/home/dummy/app'
     networks:
       - hdtapps
     depends_on:
@@ -40,8 +38,6 @@ services:
       - MONGO_PORT=27017
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    volumes:
-      - '.:/home/dummy/app'
     depends_on:
       - mongodb
       - redis
