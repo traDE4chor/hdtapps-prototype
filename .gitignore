@@ -25,11 +25,12 @@ instance/
 venv/
 ENV/
 
-# Covers JetBrains PyCharm
-.idea
-
 # App-specific stuff
 data/
 
 # Gedit backup files
 *~
+
+# IntelliJ
+.idea
+*.iml
