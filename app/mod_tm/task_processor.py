@@ -105,16 +105,16 @@ def copy_output_from_container(container_obj, output_path, destination):
 
 
 def post_output_to_consumer(task_path, filename, endpoint):
-    output_path = os.path.join(task_path, filename)
-    data = open(output_path, 'rb').read()
-    res = requests.post(url=endpoint,
-                        data=data,
-                        headers={'Content-Type': 'application/octet-stream'})
+    if endpoint:
+        output_path = os.path.join(task_path, filename)
+        data = open(output_path, 'rb').read()
+        res = requests.post(url=endpoint,
+                            data=data,
+                            headers={'Content-Type': 'application/octet-stream'})
 
 
 @celery.task(bind=True)
 def run_transformation_task(self, request_body):
-
     task_obj = TransformationTask(request_body, self.request.id)
     app_image = get_docker_image(task_obj.provider["pkgID"])
     app_container = create_docker_container(app_image, task_obj.invocation_cmd)
@@ -145,14 +145,13 @@ def run_transformation_task(self, request_body):
             output_path = output_dir + filename
             copy_output_from_container(app_container, output_path, task_obj.task_folder_path)
 
-            # task_processor.post_output_to_consumer(task_path, filename, req_body["resultsEndpoint"])
-
+            if 'resultsEndpoint' in request_body:
+                post_output_to_consumer(task_obj.task_folder_path, filename, request_body["resultsEndpoint"])
 
         remove_container(app_container)
         self.update_state(state="SUCCESS", meta=populate_meta_info(None))
     else:
         self.update_state(state="FAILURE", meta=populate_meta_info(app_container.id))
-
 
         # TODO: clean up and make proper status updates
 
