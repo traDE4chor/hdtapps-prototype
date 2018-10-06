@@ -1,12 +1,14 @@
 from flask import Flask, render_template, redirect, request
 from config import config, Config
 from celery import Celery
+from flask_cors import CORS
 
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL)
 
 
 def create_app(config_name):
     app = Flask(__name__)
+    CORS(app)
     app.url_map.strict_slashes = False
     app.config.from_object(config[config_name])
     # config[config_name].init_app(app)
