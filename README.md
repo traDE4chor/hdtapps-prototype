@@ -1,3 +1,5 @@
+[![Docker Status](https://dockerbuildbadges.quelltext.eu/status.svg?organization=trade4chor&repository=hdtapps-prototype)](https://hub.docker.com/r/trade4chor/hdtapps-prototype)
+
 ## hdtapps-prototype: 
 A prototypical implementation of a framework for handling data transformation applications in the context of TraDE Middleware 
 
